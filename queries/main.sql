@@ -1,5 +1,3 @@
-USE NameGeneratorDB;
-
 ALTER DATABASE NameGeneratorDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE first_names(
@@ -27,14 +25,14 @@ BEGIN
 
     SELECT first_names.value        
     FROM first_names
-    WHERE first_names.nationality = FIRST_NAME_NATIONALITY 
-    ORDER BY RAND() LIMIT 1
+        WHERE first_names.nationality = FIRST_NAME_NATIONALITY 
+        ORDER BY RAND() LIMIT 1
     INTO first_name;
 	
     SELECT last_names.value
     FROM last_names
-    WHERE last_names.nationality = LAST_NAME_NATIONALITY
-    ORDER BY RAND() LIMIT 1
+        WHERE last_names.nationality = LAST_NAME_NATIONALITY
+        ORDER BY RAND() LIMIT 1
     INTO last_name;
    	
     RETURN CONCAT(first_name, ' ', last_name);
