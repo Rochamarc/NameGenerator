@@ -1,0 +1,12 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: name-gen-db
+    environment:
+     MYSQL_ROOT_PASSWORD: RootPassword
+     MYSQL_USER: NameUser
+     MYSQL_HOST: localhost
+     MYSQL_PASSWORD: NamePassword
+     MYSQL_DATABASE: NameGeneratorDB
+    ports:
+      - "5500:3306"
