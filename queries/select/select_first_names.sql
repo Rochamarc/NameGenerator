@@ -1,5 +1,2 @@
-SELECT  id,
-        value,
-        gender,
-        nationality
+SELECT  value
 FROM first_names;
