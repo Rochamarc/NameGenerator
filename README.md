@@ -7,8 +7,9 @@
 
 ## Other Docs
 * [Queries](./queries/README.md)
+* [Controllers](./CONTROLLERS.md)
 
-## Initialize
+## Setup Database
 * Edit information as you please on: 
     *  _docker-compose.yaml_ and _config.json_
     * If it's necessary, update the _database-initilize.sh_ also
@@ -21,3 +22,8 @@ docker compose up -d
 ./database-initialize --User --Password
 ```
 * Now the DB is all set
+
+## Setup python
+```sh
+python -m pip install -r requirements.txt
+```
