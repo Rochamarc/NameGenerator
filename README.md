@@ -7,7 +7,7 @@
 
 ## Other Docs
 * [Queries](./queries/README.md)
-* [Controllers](./CONTROLLERS.md)
+* [Controllers](./docs/CONTROLLERS.md)
 
 ## Setup Database
 * Edit information as you please on: 
