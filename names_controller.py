@@ -10,38 +10,36 @@ import mysql.connector
 
 
 class NamesController(BaseController):
-    # TODO
-    # update this summary
     """
-    Class that handle tournament_name database
+    Class that handles the CRUD between the DB and main file
 
     Methods
     -------
-    first_name_match(name: str, gender: str, nationality: str)
+    first_name_match()
         Try to find a match for a specific first name
-    last_name_match(name: str, gender: str, nationality: str)
+    last_name_match(name, gender, nationality)
         Try to find a match for a specific last name
-    insert_first_name(name: str, gender: str, nationality: str)
+    insert_first_name(name, gender, nationality)
         Insert first name on database
-    insert_last_name(name: str, nationality: str)
+    insert_last_name(name, nationality)
         Insert last name on database
-    select_first_name(name: str, gender: str, nationality: str)
+    select_first_name(name, gender, nationality)
         Select for a specific first name on database         
     select_first_names()
         Select all first names on database        
-    select_first_names_by_gender(gender: str)
+    select_first_names_by_gender(gender)
         Select all first names on database by gender
-    select_first_names_by_nationality(nationality: str)
+    select_first_names_by_nationality(nationality)
         Select all first names on database by nationality
-    select_first_names_by_gender_and_nationality(gender: str, nationality: str)
+    select_first_names_by_gender_and_nationality(gender, nationality)
         Select all first names on database by gender AND nationality
-    select_last_name(name: str, nationality: str)
+    select_last_name(name, nationality)
         Select for a specific last name on database         
     select_last_names()
         Select all last names on database
-    select_last_names_by_nationality(nationality: str)
+    select_last_names_by_nationality(nationality)
         Select all last names on database by nationality
-    select_full_name_by_nationality(nationality: str)
+    select_full_name_by_nationality(nationality)
         Select a random full name by nationality
     """
     
