@@ -6,6 +6,8 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from base_controller import BaseController
 
+from validation import validates_gender, validates_name_nationality
+
 import mysql.connector
 
 
@@ -70,10 +72,27 @@ class NamesController(BaseController):
         return len(match) > 0
 
     @classmethod
+    @validates_gender
+    @validates_name_nationality
     def insert_first_name(cls, name: str, gender: str, nationality: str) -> None:
-        """
-        """
+        """Insert a first name into the database
+
+        Parameters
+        ----------
+        name : str
+            A string with more or equal then 3 characters and less or equal then 200 with no numbers on it
+        gender : str
+            One character that can be 'M', 'F' or 'N'
+
+        Raises
+        ------
+        Exception : If the variables are not set correctly
         
+        Returns
+        -------
+        None : None
+        """
+
         # Verify if the name is on the database
         name_match = cls.first_name_match(name, gender, nationality)
         
@@ -92,7 +111,9 @@ class NamesController(BaseController):
         print("Name inserted sucessfully!")
         return None
 
+            
     @classmethod
+    @validates_name_nationality
     def insert_last_name(cls, name: str, nationality: str) -> None:
         """
         """
@@ -262,4 +283,4 @@ class NamesController(BaseController):
         return res
 
 if __name__ == "__main__":
-    ...
+    NamesController.insert_first_name('Adrian4', 'F', 'Brasil')
