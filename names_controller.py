@@ -113,7 +113,6 @@ class NamesController(BaseController):
 
             
     @classmethod
-    @validates_name_nationality
     def insert_last_name(cls, name: str, nationality: str) -> None:
         """
         """
