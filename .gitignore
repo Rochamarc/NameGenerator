@@ -3,3 +3,4 @@
 *.csv
 files/*.py
 generate_csv_files.py
+queries/examples.sql
