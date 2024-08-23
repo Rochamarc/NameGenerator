@@ -4,13 +4,13 @@ CREATE TABLE first_names(
     id INT PRIMARY KEY AUTO_INCREMENT,
     value VARCHAR(200) NOT NULL,
     gender CHAR(1) NOT NULL,
-    nationality VARCHAR(100)
+    nationality VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE last_names(
     id INT PRIMARY KEY AUTO_INCREMENT,
     value VARCHAR(200) NOT NULL,
-    nationality VARCHAR(100)
+    nationality VARCHAR(100) NOT NULL
 );
 
 
