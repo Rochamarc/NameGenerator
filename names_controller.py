@@ -10,6 +10,7 @@ from validation import validates_gender, validates_name_nationality
 
 import mysql.connector
 
+import alive_progress
 
 class NamesController(BaseController):
     """
@@ -71,8 +72,10 @@ class NamesController(BaseController):
 
         return len(match) > 0
 
+    # TODO
+    # i can remove the null validation, so
+    # modify the validates_name_nationality and remove gender validation
     @classmethod
-    @validates_gender
     @validates_name_nationality
     def insert_first_name(cls, name: str, gender: str, nationality: str) -> None:
         """Insert a first name into the database
@@ -92,51 +95,99 @@ class NamesController(BaseController):
         -------
         None : None
         """
-
-        # Verify if the name is on the database
-        name_match = cls.first_name_match(name, gender, nationality)
-        
-        if name_match:
-            print("Name already in the database!")
-            return None 
         
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
         
-        cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
-            
+        try:
+            cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
+            print("Name inserted sucessfully!")
+        except:
+            print("Name already on the database!")
+
         conn.commit()
         conn.close()
 
-        print("Name inserted sucessfully!")
         return None
 
-            
+    @classmethod
+    def insert_first_names(cls, file_path: str) -> None:
+        """
+        """
+        conn = mysql.connector.connect(**cls.database_config)
+        cursor = conn.cursor()
+
+        with open(file_path, 'r') as file:
+            file = file.readlines()
+
+            with alive_progress.alive_bar(len(file)) as bar:
+                for f in file:
+                    f = f.split(',')
+                    name, gender, nationality = f[0], f[1], f[2].replace('\,', '')
+
+                    try:
+                        ...
+                        cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
+                    except:
+                        ...            
+
+                    bar()
+
+        conn.commit()
+        conn.close()
+
+        return None
+
     @classmethod
     def insert_last_name(cls, name: str, nationality: str) -> None:
         """
         """
         
-        # Verify if the name is on the database
-        name_match = cls.last_name_match(name, nationality)
-        
-        if name_match:
-            print("Name already in the database!")
-            return None 
-        
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
         
-        cursor.execute(cls.get_query('insert','insert_last_name'), [name, nationality])
-            
+        try:
+            cursor.execute(cls.get_query('insert','insert_last_name'), [name, nationality])
+            print("Name inserted sucessfully!")
+        except:
+            print("Name already in the database!")
+
         conn.commit()
         conn.close()
 
-        print("Name inserted sucessfully!")
+        return None
+
+    @classmethod
+    def insert_last_names(cls, file_path: str) -> None:
+        """
+        """
+        
+        conn = mysql.connector.connect(**cls.database_config)
+        cursor = conn.cursor()
+
+        with open(file_path, 'r') as file:
+            file = file.readlines()
+
+            with alive_progress.alive_bar(len(file)) as bar:
+                for f in file:
+                    f = f.split(',')
+                    name, nationality = f[0], f[-1].replace('\n', '')
+
+                    try:
+                        cursor.execute(cls.get_query('insert', 'insert_last_name'), [name, nationality])
+                        # print("Name insert sucessfully!")
+                    except:
+                        # print("Name already in the database!")
+                        pass
+                    
+                    bar()
+
+        conn.commit()
+        conn.close()
+
         return None
 
     # Select First Names Methods
-
     @classmethod
     def select_first_name(cls, name: str, gender: str, nationality) -> list:
         """Select a first name that matches by value, gender and nationality
@@ -282,4 +333,9 @@ class NamesController(BaseController):
         return res
 
 if __name__ == "__main__":
-    NamesController.insert_first_name('Adrian4', 'F', 'Brasil')
+    # NamesController.insert_first_name('Adrian4', 'F', 'Brasil')
+    print("Insert first names!")
+    NamesController.insert_first_names('files/first_names.csv')
+
+    print("Insert last names!")
+    NamesController.insert_last_names('files/last_names.csv')
