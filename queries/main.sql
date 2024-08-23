@@ -14,8 +14,12 @@ CREATE TABLE last_names(
 );
 
 
+ALTER TABLE `first_names` ADD UNIQUE `first_name_uniquiness`(`value`, `gender`, `nationality`);
+ALTER TABLE `last_names` ADD UNIQUE `last_name_uniquiness`(`value`, `nationality`);
+
 DELIMITER $
 
+-- Alter this to include gender
 CREATE FUNCTION GET_FULL_NAME(FIRST_NAME_NATIONALITY VARCHAR(200), LAST_NAME_NATIONALITY VARCHAR(100))
 RETURNS VARCHAR(400) 
 DETERMINISTIC
