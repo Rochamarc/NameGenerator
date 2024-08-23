@@ -17,6 +17,9 @@ CREATE TABLE last_names(
 ALTER TABLE `first_names` ADD UNIQUE `first_name_uniqueness`(`value`, `gender`, `nationality`);
 ALTER TABLE `last_names` ADD UNIQUE `last_name_uniqueness`(`value`, `nationality`);
 
+ALTER TABLE first_names CHANGE `value` `value` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE last_names CHANGE `value` `value` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 DELIMITER $
 
 -- Alter this to include gender
