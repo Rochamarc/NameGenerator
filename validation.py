@@ -57,7 +57,7 @@ def validates_name_nationality(func) -> bool:
     def inner1(*args, **kwargs):
         name, nationality = args[1], args[3]
     
-        name_val = accurate_len_string(name, 1, 200)
+        # name_val = accurate_len_string(name, 1, 200)
         nationality_val = accurate_len_string(nationality, 3, 200)
         
         name_val = alpha_string(name, name_val)
