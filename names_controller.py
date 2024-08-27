@@ -6,8 +6,6 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from base_controller import BaseController
 
-from validation import validates_gender, validates_name_nationality
-
 import mysql.connector
 
 import alive_progress
@@ -16,12 +14,15 @@ class NamesController(BaseController):
     """
     Class that handles the CRUD between the DB and main file
 
+    Class Variables
+    ---------------
+    sucess_insertion
+        string containing sucessfull insertion on database
+    error_insertion
+        string containing unsucessfull insertion on database
+
     Methods
     -------
-    first_name_match()
-        Try to find a match for a specific first name
-    last_name_match(name, gender, nationality)
-        Try to find a match for a specific last name
     insert_first_name(name, gender, nationality)
         Insert first name on database
     insert_last_name(name, nationality)
@@ -46,37 +47,10 @@ class NamesController(BaseController):
         Select a random full name by nationality
     """
     
-    @classmethod
-    def first_name_match(cls, name: str, gender: str, nationality: str) -> bool:
-        """Try to find a match for first name, gender & nationality
-
-        Returns
-        -------
-        bool : based on the match being true
-        """
-
-        match = cls.select_first_name(name, gender, nationality)
-
-        return len(match) > 0
+    sucess_insertion = "Name inserted sucessfully on database!"
+    error_insertion = "Name already on database!"
 
     @classmethod
-    def last_name_match(cls, name: str, nationality: str) -> bool:
-        """Try to find a match for last name & gender
-
-        Returns
-        -------
-        bool : based on the match being true
-        """
-
-        match = cls.select_last_name(name, nationality)
-
-        return len(match) > 0
-
-    # TODO
-    # i can remove the null validation, so
-    # modify the validates_name_nationality and remove gender validation
-    @classmethod
-    @validates_name_nationality
     def insert_first_name(cls, name: str, gender: str, nationality: str) -> None:
         """Insert a first name into the database
 
@@ -89,7 +63,7 @@ class NamesController(BaseController):
 
         Raises
         ------
-        Exception : If the variables are not set correctly
+        Exception : If the same name, gender & nationality is already is database
         
         Returns
         -------
@@ -101,9 +75,9 @@ class NamesController(BaseController):
         
         try:
             cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
-            print("Name inserted sucessfully!")
+            print(cls.sucess_insertion)
         except:
-            print("Name already on the database!")
+            print(cls.error_insertion)
 
         conn.commit()
         conn.close()
@@ -123,13 +97,13 @@ class NamesController(BaseController):
             with alive_progress.alive_bar(len(file)) as bar:
                 for f in file:
                     f = f.split(',')
-                    name, gender, nationality = f[0], f[1], f[2].replace('\,', '')
+                    name, gender, nationality = f[0], f[1], f[2].replace('\n', '')
 
                     try:
-                        ...
                         cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
+                        print(cls.sucess_insertion)
                     except:
-                        ...            
+                        print(cls.error_insertion)            
 
                     bar()
 
@@ -148,9 +122,9 @@ class NamesController(BaseController):
         
         try:
             cursor.execute(cls.get_query('insert','insert_last_name'), [name, nationality])
-            print("Name inserted sucessfully!")
+            print(cls.sucess_insertion)
         except:
-            print("Name already in the database!")
+            print(cls.error_insertion)
 
         conn.commit()
         conn.close()
@@ -158,7 +132,30 @@ class NamesController(BaseController):
         return None
 
     @classmethod
-    def insert_last_names(cls, file_path: str) -> None:
+    def insert_last_names_by_list(cls, file_list: list) -> None:
+        """
+        """
+        
+        conn = mysql.connector.connect(**cls.database_config)
+        cursor = conn.cursor()
+
+        with alive_progress.alive_bar(len(file_list)) as bar:
+            for f in file_list:
+                name, nationality = f[0], f[-1]
+                try:
+                    cursor.execute(cls.get_query('insert', 'insert_last_name'), [name, nationality])
+                    print(cls.sucess_insertion)
+                except:
+                    print(cls.error_insertion)
+                
+                bar()
+
+        conn.commit()
+        conn.close()
+
+        return None
+    @classmethod
+    def insert_last_names_by_csv(cls, file_path: str) -> None:
         """
         """
         
@@ -175,10 +172,9 @@ class NamesController(BaseController):
 
                     try:
                         cursor.execute(cls.get_query('insert', 'insert_last_name'), [name, nationality])
-                        # print("Name insert sucessfully!")
+                        print(cls.sucess_insertion)                        
                     except:
-                        # print("Name already in the database!")
-                        pass
+                        print(cls.error_insertion)
                     
                     bar()
 
@@ -189,7 +185,7 @@ class NamesController(BaseController):
 
     # Select First Names Methods
     @classmethod
-    def select_first_name(cls, name: str, gender: str, nationality) -> list:
+    def select_first_name(cls, name: str, gender: str, nationality) -> list[tuple]:
         """Select a first name that matches by value, gender and nationality
 
         Parameters
@@ -215,7 +211,7 @@ class NamesController(BaseController):
         return res
 
     @classmethod
-    def select_first_names(cls) -> list:
+    def select_first_names(cls) -> list[tuple]:
         """Select first names based on nationality
         
         Parameters
@@ -239,7 +235,7 @@ class NamesController(BaseController):
         return res
 
     @classmethod
-    def select_first_name_by_gender(cls, gender: str) -> list:
+    def select_first_name_by_gender(cls, gender: str) -> list[tuple]:
                 
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
@@ -252,7 +248,7 @@ class NamesController(BaseController):
         return res
     
     @classmethod
-    def select_first_name_by_nationality(cls, nationality: str) -> list:
+    def select_first_name_by_nationality(cls, nationality: str) -> list[tuple]:
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
 
@@ -264,7 +260,7 @@ class NamesController(BaseController):
         return res
 
     @classmethod
-    def select_first_name_by_gender_and_nationality(cls, gender: str, nationality: str) -> list:
+    def select_first_name_by_gender_and_nationality(cls, gender: str, nationality: str) -> list[tuple]:
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
 
@@ -278,7 +274,7 @@ class NamesController(BaseController):
     # Select Last Names methods
     
     @classmethod
-    def select_last_name(cls, name: str, nationality: str) -> list:
+    def select_last_name(cls, name: str, nationality: str) -> list[tuple]:
         """
         """
         conn = mysql.connector.connect(**cls.database_config)
@@ -293,7 +289,7 @@ class NamesController(BaseController):
 
 
     @classmethod
-    def select_last_names(cls) -> list:
+    def select_last_names(cls) -> list[tuple]:
         """
         """
                 
@@ -309,7 +305,7 @@ class NamesController(BaseController):
 
 
     @classmethod
-    def select_last_names_by_nationality(cls, nationality: str) -> list:
+    def select_last_names_by_nationality(cls, nationality: str) -> list[tuple]:
         """Select last names from tournament_name.last_names
         
         Parameters
@@ -332,10 +328,31 @@ class NamesController(BaseController):
 
         return res
 
+    @classmethod
+    def select_random_full_name_by_nationality_and_gender(cls, gender:str, nationality: str) -> list[tuple]:
+        """"""
+        
+        conn = mysql.connector.connect(**cls.database_config)
+        cursor = conn.cursor()
+
+        cursor.execute(cls.get_query('select', 'full_name_by_nationality_and_gender'), [nationality, nationality, gender])
+        res = cursor.fetchall()
+
+        conn.close()
+        return res
+
 if __name__ == "__main__":
     # NamesController.insert_first_name('Adrian4', 'F', 'Brasil')
-    print("Insert first names!")
-    NamesController.insert_first_names('files/first_names.csv')
+    # print("Insert first names!")
+    # NamesController.insert_first_names('files/first_names.csv')
 
-    print("Insert last names!")
-    NamesController.insert_last_names('files/last_names.csv')
+    # print("Insert last names!")
+    # NamesController.insert_last_names('files/last_names.csv')
+    # names = []
+    # for _ in range(10):
+    #     n = NamesController.select_random_full_name_by_nationality_and_gender('F','Brazilian')[0][0]
+    #     names.append(n)
+
+    # print(*names, sep='\n')
+    NamesController
+    ...
