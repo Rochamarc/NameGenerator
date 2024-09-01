@@ -1,6 +1,6 @@
 *__pycache__/
 .python-version
-*.csv
+files/.csv
 files/*.py
 generate_csv_files.py
 queries/examples.sql
