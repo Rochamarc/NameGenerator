@@ -401,19 +401,3 @@ class NamesController(BaseController):
 
         conn.close()
         return res
-
-if __name__ == "__main__":
-    # NamesController.insert_first_name('Adrian4', 'F', 'Brasil')
-    # print("Insert first names!")
-    # NamesController.insert_first_names('files/first_names.csv')
-
-    # print("Insert last names!")
-    # NamesController.insert_last_names('files/last_names.csv')
-    # names = []
-    # for _ in range(10):
-    #     n = NamesController.select_random_full_name_by_nationality_and_gender('F','Brazilian')[0][0]
-    #     names.append(n)
-
-    # print(*names, sep='\n')
-    NamesController
-    ...
