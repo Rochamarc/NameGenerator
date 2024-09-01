@@ -8,6 +8,8 @@ from base_controller import BaseController
 
 import mysql.connector
 
+from mysql.connector import cursor
+
 import alive_progress
 
 class NamesController(BaseController):
@@ -132,36 +134,94 @@ class NamesController(BaseController):
         return None
 
     @classmethod
-    def insert_last_names_by_list(cls, file_list: list) -> None:
-        """
+    def insert_last_names(cls, insert_point: str, file_insertion: any) -> None:
+        """Insert last names on the databse
+
+        Parameters
+        ----------
+        insert_point : str
+            Can be a `file` or `list`
+        file_insertion : any
+            A string with the path for the file if insert_point is `file` or
+            a two dimentional list if insert_point is `list`
+        
+        Raises
+        ------
+        NameError : If the value doesn't match the insert_point
+
+        Returns
+        -------
+        None
         """
         
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
 
-        with alive_progress.alive_bar(len(file_list)) as bar:
-            for f in file_list:
+        query = cls.get_query('insert', 'insert_last_name')
+
+        if insert_point == 'file':
+            cls.insert_last_names_by_csv(file_insertion, query, cursor)
+        elif insert_point == 'list':
+            cls.insert_last_names_by_list(file_insertion, query, cursor)
+        else:
+            raise NameError("Name doesn't match insert_point")
+
+        conn.commit()
+        conn.close()
+
+        return None
+    
+    @classmethod
+    def insert_last_names_by_list(cls, list_file: list,  query: str, mysql_cursor: cursor) -> None:
+        """Execute a list of names to mysql database
+
+        Parameters
+        ----------
+        list_file : list
+        A list of last names ex.: [name, nationality]
+        query : str
+        A inertiong query
+        mysql_cursor : cursor
+        A mysql database cursor
+
+        Returns
+        -------
+        None 
+        """
+        
+        with alive_progress.alive_bar(len(list_file)) as bar:
+            for f in list_file:
                 name, nationality = f[0], f[-1]
+                data = [ name, nationality ]
+                
                 try:
-                    cursor.execute(cls.get_query('insert', 'insert_last_name'), [name, nationality])
+                    mysql_cursor.execute(query, data)
                     print(cls.sucess_insertion)
                 except:
                     print(cls.error_insertion)
                 
                 bar()
 
-        conn.commit()
-        conn.close()
-
         return None
+
     @classmethod
-    def insert_last_names_by_csv(cls, file_path: str) -> None:
-        """
+    def insert_last_names_by_csv(cls, file_path: str, query: str, mysql_cursor: cursor) -> None:
+        """Execute a list file of names to mysql database
+        
+        Parameters
+        ----------
+        file_path : str
+        A path to a csv file 
+        query : str
+        A inertiong query
+        mysql_cursor : cursor
+        A mysql database cursor
+        
+        Returns
+        -------
+        None
         """
         
-        conn = mysql.connector.connect(**cls.database_config)
-        cursor = conn.cursor()
-
         with open(file_path, 'r') as file:
             file = file.readlines()
 
@@ -170,20 +230,20 @@ class NamesController(BaseController):
                     f = f.split(',')
                     name, nationality = f[0], f[-1].replace('\n', '')
 
+                    data = [name, nationality]
+
                     try:
-                        cursor.execute(cls.get_query('insert', 'insert_last_name'), [name, nationality])
+                        mysql_cursor.execute(query, data)
                         print(cls.sucess_insertion)                        
                     except:
                         print(cls.error_insertion)
                     
                     bar()
 
-        conn.commit()
-        conn.close()
-
         return None
 
     # Select First Names Methods
+
     @classmethod
     def select_first_name(cls, name: str, gender: str, nationality) -> list[tuple]:
         """Select a first name that matches by value, gender and nationality
@@ -200,6 +260,7 @@ class NamesController(BaseController):
         -------
         list : with name info: name, gender, nationality
         """
+
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
 
