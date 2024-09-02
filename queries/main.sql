@@ -45,5 +45,63 @@ BEGIN
 END;
 $
 
+CREATE FUNCTION GET_FULL_ASIAN_NAME(NATIONALITY VARCHAR(200), GENDER CHAR(1))
+RETURNS VARCHAR(400)
+DETERMINISTIC
+BEGIN
+    DECLARE first_name VARCHAR(200);
+    DECLARE last_name VARCHAR(200);
+
+    SELECT first_name.value 
+    FROM first_names
+        WHERE first_names.nationality = NATIONALITY AND first_names.gender = GENDER
+        ORDER BY RAND() LIMIT 1
+    INTO first_name;
+
+    SELECT last_name.value 
+    FROM last_names
+        WHERE last_names.nationality = NATIONALITY
+        ORDER BY RAND() LIMIT 1
+    INTO last_name;
+
+    RETURN CONCAT(last_name, ' ', first_name);
+END;
+
+
+-- CREATE FUNCTION GET_FULL_RANDOM_NAME()
+-- RETURNS VARCHAR(400)
+-- DETERMINISTIC
+-- BEGIN
+--     DECLARE first_name VARCHAR(200);
+--     DECLARE last_name VARCHAR(200);
+--     DECLARE nationality VARCHAR(100);
+--     DECLARE full_name VARCHAR(400);
+
+--     SELECT nationality 
+--     FROM last_names 
+--         GROUP BY nationality 
+--         ORDER BY RAND() LIMIT 1 
+--     INTO nationality;
+
+--     SELECT fn.value
+--         FROM first_names fn
+--         WHERE fn.nationality = nationality
+--         ORDER BY RAND() LIMIT 1
+--     INTO first_name;
+
+--     SELECT ln.value
+--         FROM last_names ln 
+--         WHERE ln.nationality = nationality 
+--         ORDER BY RAND() LIMIT 1
+--     INTO last_name;
+
+--     IF nationality IN ('Korean', 'Japanese', 'Chinese', 'Vietnamese') 
+--     THEN SET full_name = CONCAT(last_name, ' ', first_name);
+--     ELSE SET full_name = CONCAT(first_name, ' ', last_name);
+--     END IF;
+        
+--     RETURN full_name;
+-- END;
+$
 
 DELIMITER ;
