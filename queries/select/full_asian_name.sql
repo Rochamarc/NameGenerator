@@ -1,0 +1,1 @@
+SELECT GET_FULL_ASIAN_NAME(%s, %s);
