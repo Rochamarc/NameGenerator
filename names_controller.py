@@ -87,12 +87,93 @@ class NamesController(BaseController):
         return None
 
     @classmethod
-    def insert_first_names(cls, file_path: str) -> None:
+    def insert_first_names(cls, insert_point: str, file_insertion: any) -> None:
+        """Insert first names on the databse
+
+        Parameters
+        ----------
+        insert_point : str
+            Available formats: `file` or `list`
+        file_insertion : any
+            A string with the path for the file if insert_point is `file` or
+            a two dimentional list if insert_point is `list`
+        
+        Raises
+        ------
+        NameError : If the value doesn't match the insert_point
+
+        Returns
+        -------
+        None
         """
-        """
+
         conn = mysql.connector.connect(**cls.database_config)
         cursor = conn.cursor()
 
+        query = cls.get_query('insert','insert_first_name')
+
+        if insert_point == 'file':
+            cls.insert_first_names_by_csv(file_insertion, query, cursor)
+        elif insert_point == 'list':
+            cls.insert_first_names_by_list(file_insertion, query, cursor)
+        else:
+            raise NameError("Name doesn't match insert_point")
+
+        conn.commit()
+        conn.close()
+
+        return None
+
+    @classmethod
+    def insert_first_names_by_list(cls, list_file: list,  query: str, mysql_cursor: cursor) -> None:
+        """Execute a list of first names to mysql database
+
+        Parameters
+        ----------
+        list_file : list
+            A list of last names ex.: [name, gender, nationality]
+        query : str
+            A isnertion query
+        mysql_cursor : cursor
+            A mysql database cursor
+
+        Returns
+        -------
+        None 
+        """
+        with alive_progress.alive_bar(len(list_file)) as bar:
+            for f in list_file:
+                name, gender, nationality = f[0], f[1], f[2]
+                data = [name, gender, nationality]
+                
+                try:
+                    mysql_cursor.execute(query, data)
+                    print(cls.sucess_insertion)
+                except:
+                    print(cls.error_insertion)
+                
+                bar()
+
+        return None
+
+    @classmethod
+    def insert_first_names_by_csv(cls, file_path: str, query: str, mysql_cursor: cursor) -> None:
+        """Execute a list file of first names to mysql database
+        
+        Parameters
+        ----------
+        file_path : str
+            A path to a csv file 
+        query : str
+            A insertion query
+        mysql_cursor : cursor
+            A mysql database cursor
+        
+        Returns
+        -------
+        None
+        """
+        
         with open(file_path, 'r') as file:
             file = file.readlines()
 
@@ -100,17 +181,16 @@ class NamesController(BaseController):
                 for f in file:
                     f = f.split(',')
                     name, gender, nationality = f[0], f[1], f[2].replace('\n', '')
+                    
+                    data = [name, gender, nationality]
 
                     try:
-                        cursor.execute(cls.get_query('insert','insert_first_name'), [name, gender, nationality])
+                        mysql_cursor.execute(query, data)
                         print(cls.sucess_insertion)
                     except:
                         print(cls.error_insertion)            
 
                     bar()
-
-        conn.commit()
-        conn.close()
 
         return None
 
@@ -173,7 +253,7 @@ class NamesController(BaseController):
     
     @classmethod
     def insert_last_names_by_list(cls, list_file: list,  query: str, mysql_cursor: cursor) -> None:
-        """Execute a list of names to mysql database
+        """Execute a list of last names to mysql database
 
         Parameters
         ----------
@@ -206,7 +286,7 @@ class NamesController(BaseController):
 
     @classmethod
     def insert_last_names_by_csv(cls, file_path: str, query: str, mysql_cursor: cursor) -> None:
-        """Execute a list file of names to mysql database
+        """Execute a list file of last names to mysql database
         
         Parameters
         ----------
