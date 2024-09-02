@@ -1,0 +1,12 @@
+last names:
+	english
+	arabish
+	nigerian
+	russian
+
+first names:
+	north american -> F
+	european -> M e F
+	chinese, korean, vietnamese and japanese -> F
+	russian -> F e M	
+	arabish -> Mohamed e F
