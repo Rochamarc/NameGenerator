@@ -140,7 +140,7 @@ class NamesController(BaseController):
         Parameters
         ----------
         insert_point : str
-            Can be a `file` or `list`
+            Available formats: `file` or `list`
         file_insertion : any
             A string with the path for the file if insert_point is `file` or
             a two dimentional list if insert_point is `list`
@@ -178,11 +178,11 @@ class NamesController(BaseController):
         Parameters
         ----------
         list_file : list
-        A list of last names ex.: [name, nationality]
+            A list of last names ex.: [name, nationality]
         query : str
-        A inertiong query
+            A isnertion query
         mysql_cursor : cursor
-        A mysql database cursor
+            A mysql database cursor
 
         Returns
         -------
@@ -211,11 +211,11 @@ class NamesController(BaseController):
         Parameters
         ----------
         file_path : str
-        A path to a csv file 
+            A path to a csv file 
         query : str
-        A inertiong query
+            A insertion query
         mysql_cursor : cursor
-        A mysql database cursor
+            A mysql database cursor
         
         Returns
         -------
@@ -253,7 +253,7 @@ class NamesController(BaseController):
         name : str
             A value for a first name
         gender : str
-            A char string containing M, F or N
+            A char string: M, F or N
         nationality : str
             A country name
         Returns
